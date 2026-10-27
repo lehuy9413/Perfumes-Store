@@ -46,7 +46,7 @@ const Perfumes = () => {
     const fetchBrands = async () => {
       try {
         const res = await perfumeAPI.getAllBrands();
-        setBrands(res.data || []);
+        setBrands(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error('Error fetching brands:', err);
       }
@@ -56,7 +56,7 @@ const Perfumes = () => {
     const fetchTotalCount = async () => {
       try {
         const res = await perfumeAPI.getAllPerfumes({});
-        setTotalPerfumes(res.data?.length || 0);
+        setTotalPerfumes(Array.isArray(res.data) ? res.data.length : 0);
       } catch (err) {
         console.error('Error fetching total count:', err);
       }
@@ -123,7 +123,7 @@ const Perfumes = () => {
       }
       
       const res = await perfumeAPI.getAllPerfumes(params);
-      let filteredPerfumes = res.data || [];
+      let filteredPerfumes = Array.isArray(res.data) ? res.data : [];
 
       // Additional client-side filtering for multiple brands
       if (selectedBrands.length > 1) {

@@ -154,11 +154,13 @@ const Home = () => {
 
         // Fetch brands
         const brandsRes = await perfumeAPI.getAllBrands();
-        setBrands(brandsRes.data || []);
+        const brandsData = Array.isArray(brandsRes.data) ? brandsRes.data : [];
+        setBrands(brandsData);
 
         // Fetch all perfumes and filter featured ones
         const perfumesRes = await perfumeAPI.getAllPerfumes({});
-        const featured = (perfumesRes.data || []).filter(p => p.isFeatured === true);
+        const perfumesData = Array.isArray(perfumesRes.data) ? perfumesRes.data : [];
+        const featured = perfumesData.filter(p => p.isFeatured === true);
         setFeaturedPerfumes(featured);
       } catch (err) {
         console.error('Error fetching data:', err);
