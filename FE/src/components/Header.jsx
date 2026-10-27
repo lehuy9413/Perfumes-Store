@@ -60,63 +60,55 @@ const Header = () => {
         setActiveCategory(category);
     }, [searchParams]);
 
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <nav className="bg-white sticky top-0 z-50" style={{ borderBottom: '1px solid #EAE6E0' }}>
+        <nav 
+            className={`sticky top-0 z-50 transition-all duration-300 ${
+                isScrolled 
+                    ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-[#EAE6E0]' 
+                    : 'bg-white border-b border-[#EAE6E0]'
+            }`}
+        >
             <div className="container mx-auto px-4">
                 {/* Main Header */}
-                <div className="flex justify-between items-center py-4">
+                <div className={`flex justify-between items-center transition-all duration-300 ${isScrolled ? 'py-3' : 'py-4'}`}>
                     {/* Logo */}
-                    <Link to="/" className="text-2xl font-bold tracking-wider flex-shrink-0">
-                        L'<span style={{ color: '#C9A55C' }}>ESSENCE</span>
+                    <Link to="/" className="text-2xl font-bold tracking-wider flex-shrink-0 group transition-transform duration-300 hover:scale-105">
+                        L'<span style={{ color: '#C9A55C' }} className="transition-colors duration-300 group-hover:text-[#B8943F]">ESSENCE</span>
                     </Link>
 
                     {/* Middle Navigation - Category Links */}
-                    <div className="hidden md:flex items-center space-x-8 flex-1 justify-center px-8">
+                    <div className="hidden md:flex items-center space-x-10 flex-1 justify-center px-8">
                         <button
                             onClick={() => handleCategoryFilter('brands')}
-                            className="text-sm font-semibold tracking-widest transition-colors pb-2"
-                            style={{ 
-                                color: activeCategory === 'brands' ? '#C9A55C' : '#1A1A1A',
-                                borderBottom: activeCategory === 'brands' ? '2px solid #C9A55C' : 'none'
-                            }}
-                            onMouseEnter={(e) => activeCategory !== 'brands' && (e.target.style.color = '#C9A55C')}
-                            onMouseLeave={(e) => activeCategory !== 'brands' && (e.target.style.color = '#1A1A1A')}
+                            className={`luxury-nav-link text-sm font-semibold tracking-widest transition-colors py-1 ${activeCategory === 'brands' ? 'active text-[#C9A55C]' : 'text-[#1A1A1A] hover:text-[#C9A55C]'}`}
                         >
                             BRANDS
                         </button>
                         <button
                             onClick={() => handleCategoryFilter('men')}
-                            className="text-sm font-semibold tracking-widest transition-colors pb-2"
-                            style={{ 
-                                color: activeCategory === 'men' ? '#C9A55C' : '#1A1A1A',
-                                borderBottom: activeCategory === 'men' ? '2px solid #C9A55C' : 'none'
-                            }}
-                            onMouseEnter={(e) => activeCategory !== 'men' && (e.target.style.color = '#C9A55C')}
-                            onMouseLeave={(e) => activeCategory !== 'men' && (e.target.style.color = '#1A1A1A')}
+                            className={`luxury-nav-link text-sm font-semibold tracking-widest transition-colors py-1 ${activeCategory === 'men' ? 'active text-[#C9A55C]' : 'text-[#1A1A1A] hover:text-[#C9A55C]'}`}
                         >
                             MEN
                         </button>
                         <button
                             onClick={() => handleCategoryFilter('women')}
-                            className="text-sm font-semibold tracking-widest transition-colors pb-2"
-                            style={{ 
-                                color: activeCategory === 'women' ? '#C9A55C' : '#1A1A1A',
-                                borderBottom: activeCategory === 'women' ? '2px solid #C9A55C' : 'none'
-                            }}
-                            onMouseEnter={(e) => activeCategory !== 'women' && (e.target.style.color = '#C9A55C')}
-                            onMouseLeave={(e) => activeCategory !== 'women' && (e.target.style.color = '#1A1A1A')}
+                            className={`luxury-nav-link text-sm font-semibold tracking-widest transition-colors py-1 ${activeCategory === 'women' ? 'active text-[#C9A55C]' : 'text-[#1A1A1A] hover:text-[#C9A55C]'}`}
                         >
                             WOMEN
                         </button>
                         <button
                             onClick={() => handleCategoryFilter('unisex')}
-                            className="text-sm font-semibold tracking-widest transition-colors pb-2"
-                            style={{ 
-                                color: activeCategory === 'unisex' ? '#C9A55C' : '#1A1A1A',
-                                borderBottom: activeCategory === 'unisex' ? '2px solid #C9A55C' : 'none'
-                            }}
-                            onMouseEnter={(e) => activeCategory !== 'unisex' && (e.target.style.color = '#C9A55C')}
-                            onMouseLeave={(e) => activeCategory !== 'unisex' && (e.target.style.color = '#1A1A1A')}
+                            className={`luxury-nav-link text-sm font-semibold tracking-widest transition-colors py-1 ${activeCategory === 'unisex' ? 'active text-[#C9A55C]' : 'text-[#1A1A1A] hover:text-[#C9A55C]'}`}
                         >
                             UNISEX
                         </button>
