@@ -7,9 +7,24 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware order is important!
-// 1. CORS must come first
+// 1. CORS must come first - Allow localhost, configured FRONTEND_URL, and any *.vercel.app deployment
+const allowedOrigins = [
+  'http://localhost:5173',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      process.env.NODE_ENV !== 'production'
+    ) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -43,12 +58,20 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/asg_sdn', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+// Connect to MongoDB (handles both standard server and serverless environments)
+const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) return;
+  try {
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/asg_sdn', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log('MongoDB connected');
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+  }
+};
+connectDB();
 
 // Import models to ensure they are registered with Mongoose
 require('./models/User');
@@ -73,11 +96,6 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'Backend is working!' });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('\n=== GLOBAL ERROR HANDLER ===');
@@ -93,3 +111,12 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err.message : 'An error occurred'
   });
 });
+
+// Start server locally (on Vercel, the app is exported as a serverless function)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
